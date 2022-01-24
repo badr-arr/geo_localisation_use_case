@@ -1,0 +1,18 @@
+repos:
+-   repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+    - id: black
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.7.9
+    hooks:
+    - id: flake8
+      additional_dependencies: [
+              '-e', 'git+https://github.com/pycqa/pyflakes@1911c20#egg=pyflakes',
+              '-e', 'git+https://github.com/pycqa/pycodestyle@d219c68#egg=pycodestyle',
+      ]
+-   repo: https://github.com/econchick/interrogate
+    rev: 1.4.0
+    hooks:
+    - id: interrogate
+      args: [-v, -i, --fail-under=40]
