@@ -9,8 +9,9 @@ class Database:
     def __init__(self, config_file_path: str):
         self.config_file_path = config_file_path
 
-    def parser(self, section="postgresql"):
+    def parser(self, section="postgresql") -> dict:
         """
+        Parse arguments from database ini file
 
         :param section:
         :return:
@@ -36,8 +37,9 @@ class Database:
 
         return db
 
-    def test_connection(self):
+    def test_connection(self) -> None:
         """
+        Function to test postgres connection
 
         :return:
         """
@@ -69,8 +71,9 @@ class Database:
                 conn.close()
                 print("Database connection closed.")
 
-    def execute_query(self, query: str):
+    def execute_query(self, query: str) -> None:
         """
+        Function to execute string query
 
         :param query:
         :return:
@@ -95,8 +98,9 @@ class Database:
             if conn is not None:
                 conn.close()
 
-    def select_query(self, query: str):
+    def select_query(self, query: str) -> None:
         """
+        Execute select query
 
         :param query:
         :return:
@@ -112,12 +116,8 @@ class Database:
             cur = conn.cursor()
 
             cur.execute(query)
-            rows = cur.fetchall()
 
-            rows = cur.fetchall()
             print("The number of rows: ", cur.rowcount)
-            for row in rows:
-                print(row)
 
             cur.close()
 
@@ -130,6 +130,7 @@ class Database:
 
     def insert_df_into_table(self, df: pd.DataFrame, table_name: str) -> None:
         """
+        Using sqlAlchemy append dataframe to postgres table
 
         :param df:
         :param table_name:

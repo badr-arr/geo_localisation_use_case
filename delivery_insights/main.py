@@ -7,27 +7,22 @@ from analysis.insights import visualize
 from loader.db import Database
 from loader.kaggle import kaggle
 from models.accidents import Accidents
+from utils.config import parse_arguments
 
 warnings.filterwarnings("ignore")
 
-ANALYSIS_FOLDER = os.path.join(os.getcwd(), "plots")
-DB_CONFIG_FILE = os.path.join(os.getcwd(), "../conf/database.ini")
+config = parse_arguments()
+OUTPUT_FOLDER = config.output_folder
+DB_CONFIG_FILE = config.db_config_file
 
 
-def main():
+def main() -> None:
     """
-
+    Main function
     :return:
     """
-    kg = kaggle(
-        repo="tsiaras/uk-road-safety-accidents-and-vehicles",
-        files_list=["Accident_Information.csv", "Vehicle_Information.csv"],
-    )
-    kg.load_files()
-
+    # Create table in database
     db = Database(DB_CONFIG_FILE)
-    chart = Chart(ANALYSIS_FOLDER)
-
     create_table_query = """
             CREATE TABLE IF NOT EXISTS accidents (
                 accident_index TEXT PRIMARY KEY,
@@ -43,6 +38,13 @@ def main():
 
     db.execute_query(query=create_table_query)
 
+    # Load data
+    kg = kaggle(
+        repo="tsiaras/uk-road-safety-accidents-and-vehicles",
+        files_list=["Accident_Information.csv", "Vehicle_Information.csv"],
+    )
+    kg.load_files()
+
     print("Reading file Accident_Information.csv")
     accident_info = pd.read_csv(os.path.join(os.getcwd(), "Accident_Information.csv"))
 
@@ -52,10 +54,11 @@ def main():
         encoding="ISO-8859-1",
     )
 
+    # Transform
     all_data = accident_info.merge(
         vehicle_info, on=["Accident_Index", "Year"], how="inner"
     ).rename(columns={"Date": "Accident_date"})
-    all_data.head(20).to_csv("sample.csv", sep=";")
+
     new_data = all_data[
         [
             "Accident_Index",
@@ -72,20 +75,14 @@ def main():
 
     new_data.columns = [c.lower() for c in new_data.columns]
 
+    # Load into database
     print("Insert data into database")
     db.insert_df_into_table(new_data.head(5), "accidents")
 
-    query = """
-    select * from accidents;
-    """
-
-    db.select_query(query=query)
-
+    # Visualize data
     accidents = Accidents()
+    chart = Chart(OUTPUT_FOLDER)
     data = accidents.transform(all_data)
-
-    if not os.path.exists(ANALYSIS_FOLDER):
-        os.mkdir(ANALYSIS_FOLDER)
 
     visualize(data, accidents, chart)
 

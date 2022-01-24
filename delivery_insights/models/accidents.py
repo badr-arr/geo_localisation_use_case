@@ -4,28 +4,51 @@ from delivery_insights.utils.fct import set_daytime_bands, set_vehicule_age_band
 
 
 class Accidents:
-    def __init__(self):
-        self.days = [
-            "Sunday",
-            "Saturday",
-            "Friday",
-            "Thursday",
-            "Wednesday",
-            "Tuesday",
-            "Monday",
-        ]
-        self.daytime = [
-            "night (23-5)",
-            "evening (19-23)",
-            "afternoon rush (15-19)",
-            "office hours (10-15)",
-            "morning rush (5-10)",
-        ]
-        self.vehicule_age = [">=15", "10-14", "5-9", "0-4"]
+    def get_accidents_count_by_column(
+        self, data: pd.DataFrame, column: str, min_value: int = 0, filter_conditions=None
+    ):
+        filtered_data = self.filter_data(
+            data=data, column=column, filter_conditions=filter_conditions
+        )
+
+        grouped_data = (
+            filtered_data.groupby(column)
+            .size()
+            .reset_index(name="counts")
+            .sort_values(by="counts", ascending=False)
+        )
+        grouped_data = grouped_data[grouped_data.counts > min_value]
+        labels = grouped_data.apply(
+            lambda x: str(x[0]) + "\n (" + str(x[1]) + ")", axis=1
+        )
+        sizes = grouped_data["counts"].values.tolist()
+        return grouped_data, labels, sizes
+
+    def get_list_accidents_values_by_column(
+        self, data: pd.DataFrame, column: str, filter_conditions=None
+    ):
+        """
+        Count values of accidents data by selected column
+
+        :param data:
+        :param column:
+        :param filter_conditions:
+        :return:
+        """
+        filtered_data = self.filter_data(
+            data=data, column=column, filter_conditions=filter_conditions
+        )
+
+        cols = filtered_data[column].value_counts().index.values
+
+        filtered_data = [filtered_data[column].value_counts()[c] for c in cols]
+
+        return filtered_data, cols
 
     @staticmethod
     def transform(data: pd.DataFrame):
         """
+        Transform accidents data
 
         :param data:
         :return:
@@ -55,6 +78,14 @@ class Accidents:
 
     @staticmethod
     def filter_data(data, column: str, filter_conditions=None):
+        """
+        Filter accidents data by dropping unused values
+
+        :param data:
+        :param column:
+        :param filter_conditions:
+        :return:
+        """
         if filter_conditions:
             if isinstance(filter_conditions, list):
                 data.drop(
@@ -71,30 +102,16 @@ class Accidents:
 
         return data
 
-    def get_list_accidents_values_by_column(
-        self, data: pd.DataFrame, column: str, filter_conditions=None
-    ):
-        """
-
-        :param data:
-        :return:
-        """
-        filtered_data = self.filter_data(
-            data=data, column=column, filter_conditions=filter_conditions
-        )
-
-        cols = filtered_data[column].value_counts().index.values
-
-        filtered_data = [filtered_data[column].value_counts()[c] for c in cols]
-
-        return filtered_data, cols
-
+    @staticmethod
     def get_accidents_share_count(
-        self, data: pd.DataFrame, cols: [], filter_conditions: {} = None
+        data: pd.DataFrame, cols: [], filter_conditions: {} = None
     ):
         """
+        Get accident share count by columns
 
         :param data:
+        :param cols:
+        :param filter_conditions:
         :return:
         """
         counts = data.groupby(cols).size()
@@ -118,12 +135,17 @@ class Accidents:
 
         return counts_share
 
+    @staticmethod
     def get_accidents_counts_using_two_columns(
-        self, data: pd.DataFrame, cols: [], filter_conditions: {}, new_cols_name: []
+        data: pd.DataFrame, cols: [], filter_conditions: {}, new_cols_name: []
     ):
         """
+        Aggregate accidents data counts using two columns
 
         :param data:
+        :param cols:
+        :param filter_conditions:
+        :param new_cols_name:
         :return:
         """
         counts = data.groupby(cols).size().reset_index()
@@ -142,8 +164,10 @@ class Accidents:
 
         return counts
 
-    def get_accidents_per_year(self, data: pd.DataFrame):
+    @staticmethod
+    def get_accidents_per_year(data: pd.DataFrame):
         """
+        Get accidents counts per year
 
         :param data:
         :return:
@@ -153,8 +177,10 @@ class Accidents:
         )
         return yearly_count
 
-    def get_accidents_per_hour(self, data: pd.DataFrame):
+    @staticmethod
+    def get_accidents_per_hour(data: pd.DataFrame):
         """
+        Get accidents count per hour
 
         :param data:
         :return:
@@ -162,8 +188,10 @@ class Accidents:
         hourly_count = data["Hour"].value_counts().sort_index(ascending=False)
         return hourly_count
 
-    def get_accidents_per_daytime(self, data: pd.DataFrame):
+    @staticmethod
+    def get_accidents_per_daytime(data: pd.DataFrame):
         """
+        Get accidents count per daytime
 
         :param data:
         :return:
@@ -171,7 +199,15 @@ class Accidents:
         daytime_count = data["Daytime"].value_counts().sort_index(ascending=False)
         return daytime_count
 
-    def get_accidents_per_weekday_and_year(self, data: pd.DataFrame, days: []):
+    @staticmethod
+    def get_accidents_per_weekday_and_year(data: pd.DataFrame, days: []):
+        """
+        Aggregate accidents by weekday and year
+
+        :param data:
+        :param days:
+        :return:
+        """
         weekday = data["Accident_date"].dt.day_name()
         year = data["Accident_date"].dt.year
 
@@ -182,23 +218,3 @@ class Accidents:
             .reindex(columns=days)
         )
         return accidents_per_weekday_and_year
-
-    def get_accidents_count_by_column(
-        self, data: pd.DataFrame, column: str, min_value: int = 0, filter_conditions=None
-    ):
-        filtered_data = self.filter_data(
-            data=data, column=column, filter_conditions=filter_conditions
-        )
-
-        grouped_data = (
-            filtered_data.groupby(column)
-            .size()
-            .reset_index(name="counts")
-            .sort_values(by="counts", ascending=False)
-        )
-        grouped_data = grouped_data[grouped_data.counts > min_value]
-        labels = grouped_data.apply(
-            lambda x: str(x[0]) + "\n (" + str(x[1]) + ")", axis=1
-        )
-        sizes = grouped_data["counts"].values.tolist()
-        return grouped_data, labels, sizes

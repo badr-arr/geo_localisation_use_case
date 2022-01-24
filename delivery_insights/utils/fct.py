@@ -1,6 +1,6 @@
-def set_daytime_bands(hour: int):
+def set_daytime_bands(hour: int) -> str:
     """
-
+    Set daytime depending on hours
     :param hour:
     :return:
     """
@@ -16,9 +16,9 @@ def set_daytime_bands(hour: int):
         return "night (23-5)"
 
 
-def set_vehicule_age_bands(age: int):
+def set_vehicule_age_bands(age: int) -> str:
     """
-
+    Set age bands depending on age
     :param age:
     :return:
     """

@@ -13,6 +13,7 @@ class Chart:
     @staticmethod
     def add_data_labels(ax, params: {}):
         """
+        Function to add labels to charts
 
         :param ax:
         :param params:
@@ -61,6 +62,7 @@ class Chart:
         xlabel_title: str = "",
     ) -> None:
         """
+        Create Line chart
 
         :param data:
         :param index_date_column:
@@ -92,6 +94,7 @@ class Chart:
         self, data_list: [], names_list: [], chart_title: str, filename: str
     ) -> None:
         """
+        Create pie chart
 
         :param data_list:
         :param names_list:
@@ -129,6 +132,7 @@ class Chart:
         filename: str,
     ) -> None:
         """
+        Create stacked bar chart
 
         :param data:
         :param yaxis_values:
@@ -181,6 +185,7 @@ class Chart:
         data_labels_params: {} = None,
     ) -> None:
         """
+        Create grouped bar chart
 
         :param data:
         :param yaxis_variable:
@@ -228,6 +233,7 @@ class Chart:
         self, data: pd.Series, graph_title: str, ylabel: str, filename: str
     ) -> None:
         """
+        Create bar chart
 
         :param data:
         :param graph_title:
@@ -257,7 +263,17 @@ class Chart:
         filename: str,
         xlabel: str = "",
         ylabel: str = "",
-    ):
+    ) -> None:
+        """
+        Create heatmap chart
+
+        :param data:
+        :param graph_title:
+        :param filename:
+        :param xlabel:
+        :param ylabel:
+        :return:
+        """
         plt.figure(figsize=(10, 6))
         sns.heatmap(data, cmap="Greys")
         plt.title(graph_title, fontsize=14, fontweight="bold")
@@ -265,7 +281,15 @@ class Chart:
         plt.ylabel(ylabel)
         plt.savefig(os.path.join(self.output_folder, filename))
 
-    def treemap_chart(self, labels: pd.DataFrame, sizes: list, filename: str):
+    def treemap_chart(self, labels: pd.DataFrame, sizes: list, filename: str) -> None:
+        """
+        Create treemap chart
+
+        :param labels:
+        :param sizes:
+        :param filename:
+        :return:
+        """
         colors = [plt.cm.Pastel1(i / float(len(labels))) for i in range(len(labels))]
 
         # plot

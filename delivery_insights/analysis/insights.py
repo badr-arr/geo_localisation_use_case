@@ -1,4 +1,12 @@
-def visualize(data, accidents, chart):
+def visualize(data, accidents, chart) -> None:
+    """
+    Create different charts to visualize data by different variables
+
+    :param data:
+    :param accidents:
+    :param chart:
+    :return:
+    """
     # draw accidents values by severity
     (
         list_accidents_values_by_severity,
@@ -29,7 +37,7 @@ def visualize(data, accidents, chart):
         filename="Accidents_weather_conditions_share.png",
     )
 
-    # draw_total_count_per_date_line_chart
+    # draw total count per date line chart
     chart.total_count_per_date_line_chart(
         data=data,
         index_date_column="Accident_date",
@@ -145,7 +153,7 @@ def visualize(data, accidents, chart):
         filename="accidents_per_weekday_and_year.png",
     )
 
-    # fatalities over weeks
+    # draw fatalities over weeks
     fatalities = data[data["Accident_Severity"] == "Fatal"]
     chart.total_count_per_date_line_chart(
         data=fatalities,
@@ -156,7 +164,6 @@ def visualize(data, accidents, chart):
         rule="W",
     )
 
-    # fatalities_variation_over_years(all_data)
     # draw accidents by hours
     hourly_count = accidents.get_accidents_per_hour(data)
     chart.bar_chart(
@@ -165,7 +172,8 @@ def visualize(data, accidents, chart):
         ylabel="Total values",
         filename="accidents_per_Hour.png",
     )
-    # accidents_by_daytime(all_data, daytime)
+
+    # draw accidents by daytime
     daytime_count = accidents.get_accidents_per_daytime(data)
     chart.bar_chart(
         data=daytime_count,
@@ -173,6 +181,7 @@ def visualize(data, accidents, chart):
         ylabel="Total values",
         filename="accidents_per_daytime.png",
     )
+
     # draw severity by daytime
     daytime = [
         "night (23-5)",

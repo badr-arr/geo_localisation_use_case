@@ -11,24 +11,30 @@ class kaggle:
 
     def load_files(self):
         """
+        Using Kaggle API load csv files from Kaggle repo
 
         :return:
         """
-        api = KaggleApi()
-        api.authenticate()
-        for f in self.files_list:
-            if os.path.exists(os.path.join(os.getcwd(), f)):
-                print(f"{f} exists already.")
-            elif os.path.exists(os.path.join(os.getcwd(), f"{f}.zip")):
-                print(f"{f}.zip file found. Unzipping...")
-                self.unzip_file(f)
-            else:
-                print(f"Loading file : {f}")
-                api.dataset_download_file(self.repo, f)
-                self.unzip_file(f)
+        try:
+            api = KaggleApi()
+            api.authenticate()
+            for f in self.files_list:
+                if os.path.exists(os.path.join(os.getcwd(), f)):
+                    print(f"{f} exists already.")
+                elif os.path.exists(os.path.join(os.getcwd(), f"{f}.zip")):
+                    print(f"{f}.zip file found. Unzipping...")
+                    self.unzip_file(f)
+                else:
+                    print(f"Loading file : {f}")
+                    api.dataset_download_file(self.repo, f)
+                    self.unzip_file(f)
+
+        except Exception as e:
+            print(f"Error: {e}")
 
     def unzip_file(self, f):
         """
+        Unzip csv files loaded from Kaggle
 
         :param f:
         :return:

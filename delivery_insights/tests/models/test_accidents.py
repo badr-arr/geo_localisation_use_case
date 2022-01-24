@@ -6,6 +6,7 @@ from delivery_insights.models.accidents import Accidents
 
 def test_transform():
     """
+    Test Accidents tranform function
 
     :return:
     """
@@ -43,6 +44,7 @@ def test_transform():
 
 def test_filter_data():
     """
+    Test Accidents filter_data function
 
     :return:
     """
@@ -71,6 +73,7 @@ def test_filter_data():
 
 def test_get_list_accidents_values_by_column():
     """
+    Test Accidents get_list_accidents_values_by_column function
 
     :return:
     """
@@ -94,6 +97,7 @@ def test_get_list_accidents_values_by_column():
 
 def test_get_accidents_share_count():
     """
+    Test Accidents get_accidents_share_count function
 
     :return:
     """
@@ -118,6 +122,7 @@ def test_get_accidents_share_count():
 
 def test_get_accidents_counts_using_two_columns():
     """
+    Test Accidents get_accidents_counts_using_two_columns function
 
     :return:
     """
@@ -155,6 +160,7 @@ def test_get_accidents_counts_using_two_columns():
 
 def test_get_accidents_per_year():
     """
+    Test Accidents get_accidents_per_year function
 
     :return:
     """
@@ -176,6 +182,7 @@ def test_get_accidents_per_year():
 
 def test_get_accidents_per_hour():
     """
+    Test Accidents get_accidents_per_hour function
 
     :return:
     """
@@ -197,6 +204,7 @@ def test_get_accidents_per_hour():
 
 def test_get_accidents_per_daytime():
     """
+    Test Accidents get_accidents_per_daytime function
 
     :return:
     """
@@ -218,6 +226,7 @@ def test_get_accidents_per_daytime():
 
 def test_get_accidents_per_weekday_and_year():
     """
+    Test Accidents get_accidents_per_weekday_and_year function
 
     :return:
     """
@@ -242,6 +251,7 @@ def test_get_accidents_per_weekday_and_year():
 
 def test_get_accidents_count_by_column():
     """
+    Test Accidents get_accidents_count_by_column function
 
     :return:
     """
