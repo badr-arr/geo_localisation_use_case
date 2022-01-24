@@ -1,12 +1,11 @@
-import os
 import warnings
-
 import pandas as pd
-from analysis.charts import Chart
-from analysis.insights import visualize
-from loader.db import Database
-from loader.kaggle import kaggle
-from models.accidents import Accidents
+import os
+
+from pipelines.extract.pipeline import extract
+from pipelines.transform.pipeline import transform
+from pipelines.load.pipeline import load
+from pipelines.visualize.pipeline import visualize
 from utils.config import parse_arguments
 
 warnings.filterwarnings("ignore")
@@ -21,29 +20,11 @@ def main() -> None:
     Main function
     :return:
     """
-    # Create table in database
-    db = Database(DB_CONFIG_FILE)
-    create_table_query = """
-            CREATE TABLE IF NOT EXISTS accidents (
-                accident_index TEXT PRIMARY KEY,
-                year INT,
-                age_band_of_briver TEXT,
-                age_of_vehicle INT,
-                driver_home_area_type TEXT,
-                journey_purpose_of_driver TEXT,
-                accident_Severity TEXT,
-                accident_date DATE,
-                day_of_Week TEXT
-            )"""
-
-    db.execute_query(query=create_table_query)
-
-    # Load data
-    kg = kaggle(
+    extract(
         repo="tsiaras/uk-road-safety-accidents-and-vehicles",
         files_list=["Accident_Information.csv", "Vehicle_Information.csv"],
+        output_folder=OUTPUT_FOLDER,
     )
-    kg.load_files()
 
     print("Reading file Accident_Information.csv")
     accident_info = pd.read_csv(os.path.join(os.getcwd(), "Accident_Information.csv"))
@@ -55,12 +36,14 @@ def main() -> None:
     )
 
     # Transform
-    all_data = accident_info.merge(
+    data = accident_info.merge(
         vehicle_info, on=["Accident_Index", "Year"], how="inner"
     ).rename(columns={"Date": "Accident_date"})
 
-    new_data = all_data[
-        [
+    data = transform(
+        data=data,
+        output_folder=OUTPUT_FOLDER,
+        columns=[
             "Accident_Index",
             "Year",
             "Age_Band_of_Driver",
@@ -70,21 +53,11 @@ def main() -> None:
             "Accident_Severity",
             "Accident_date",
             "Day_of_Week",
-        ]
-    ]
+        ],
+    )
 
-    new_data.columns = [c.lower() for c in new_data.columns]
-
-    # Load into database
-    print("Insert data into database")
-    db.insert_df_into_table(new_data.head(5), "accidents")
-
-    # Visualize data
-    accidents = Accidents()
-    chart = Chart(OUTPUT_FOLDER)
-    data = accidents.transform(all_data)
-
-    visualize(data, accidents, chart)
+    load(data=data, db_config_file=DB_CONFIG_FILE)
+    visualize(data, output_folder=OUTPUT_FOLDER)
 
 
 if __name__ == "__main__":

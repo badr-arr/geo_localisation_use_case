@@ -1,12 +1,48 @@
-def visualize(data, accidents, chart) -> None:
-    """
-    Create different charts to visualize data by different variables
+import pandas as pd
+import argparse
+import os
+import sys
+from delivery_insights.models.accidents import Accidents
+from delivery_insights.analysis.charts import Chart
 
-    :param data:
-    :param accidents:
-    :param chart:
+
+def visualize_pipeline():
+    """
+
     :return:
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input-folder", help="input folder", type=str)
+    parser.add_argument("--filename", help="filename", type=str)
+    parser.add_argument("--output-folder", help="Output folder", type=str)
+    args = parser.parse_args()
+    input_folder = args.input_folder
+    filename = args.filename
+    output_folder = args.output_folder
+
+    try:
+        if not os.path.exists(os.path.join(input_folder, filename)):
+            raise Exception(f"{filename} does not exist.")
+        if not os.path.exists(output_folder):
+            os.mkdir(output_folder)
+
+        data = pd.read_csv(os.path.join(input_folder, filename))
+        visualize(data=data, output_folder=output_folder)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit()
+
+
+def visualize(data: pd.DataFrame, output_folder: str):
+    """
+
+    :param data:
+    :param output_folder:
+    :return:
+    """
+    accidents = Accidents()
+    chart = Chart(output_folder=output_folder)
     # draw accidents values by severity
     (
         list_accidents_values_by_severity,
