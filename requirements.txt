@@ -1,0 +1,12 @@
+kaggle
+psycopg2
+matplotlib
+seaborn
+squarify
+sqlalchemy
+pre-commit
+flake8
+black
+isort
+interrogate
+sphinx
