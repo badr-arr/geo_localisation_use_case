@@ -59,7 +59,7 @@ visualize_pipeline --input-folder INPUT_FOLDER --filename FILENAME --output-fold
 To run multiple pipelines, you can create a bash file and put all commands above.
 
 ## Insights
-When visualize pipeline run, you will get the list of insights below:
+When visualize pipeline run, you will get the list of insights below (you will find under insights folder):
 - Accidents_per_months.png
 - Accidents_severity_share.png
 - Accidents_weather_conditions_share.png
