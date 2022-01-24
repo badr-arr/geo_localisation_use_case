@@ -59,19 +59,44 @@ visualize_pipeline --input-folder INPUT_FOLDER --filename FILENAME --output-fold
 To run multiple pipelines, you can create a bash file and put all commands above.
 
 ## Insights
-When visualize pipeline run, you will get the list of insights below:
-- Accidents_per_months.png
-- Accidents_severity_share.png
-- Accidents_weather_conditions_share.png
-- accidents_by_age_and_sex.png
-- accidents_by_drivers_age_and_vehicles_age.png
-- accidents_by_home_area.png
-- accidents_by_journey_purpose.png
-- accidents_by_manoeuver.png
-- accidents_per_Hour.png
-- accidents_per_daytime.png
-- accidents_per_weekday_and_year.png
-- accidents_per_year.png
-- daytime_accidents_by_severity.png
-- fatalities_over_weeks.png
-- vehicules_age_bands_accidents_by_drivers_age.png
+When visualize pipeline run, you will get the list of insights below (you will find under insights folder):
+- Accidents_per_months.png:
+![Accidents_per_months.png](./insights/Accidents_per_months.png "Accidents_per_months.png")
+- Accidents_severity_share.png:
+![Accidents_severity_share.png](./insights/Accidents_severity_share.png "Accidents_severity_share.png")
+- Accidents_weather_conditions_share.png:
+![Accidents_weather_conditions_share.png](./insights/Accidents_weather_conditions_share.png "Accidents_weather_conditions_share.png")
+- accidents_by_age_and_sex.png:
+![accidents_by_age_and_sex.png](./insights/accidents_by_age_and_sex.png "accidents_by_age_and_sex.png")
+- accidents_by_drivers_age_and_vehicles_age.png:
+![accidents_by_drivers_age_and_vehicles_age.png](./insights/accidents_by_drivers_age_and_vehicles_age.png "accidents_by_drivers_age_and_vehicles_age.png")
+
+- accidents_by_home_area.png:
+![accidents_by_home_area.png](./insights/accidents_by_home_area.png "accidents_by_home_area.png")
+
+- accidents_by_journey_purpose.png:
+![accidents_by_journey_purpose.png](./insights/accidents_by_journey_purpose.png "accidents_by_journey_purpose.png")
+
+- accidents_by_manoeuver.png:
+![accidents_by_manoeuver.png](./insights/accidents_by_manoeuver.png "accidents_by_manoeuver.png")
+
+- accidents_per_Hour.png:
+![accidents_per_Hour.png](./insights/accidents_per_Hour.png "accidents_per_Hour.png")
+
+- accidents_per_daytime.png:
+![accidents_per_daytime.png](./insights/accidents_per_daytime.png "accidents_per_daytime.png")
+
+- accidents_per_weekday_and_year.png:
+![accidents_per_weekday_and_year.png](./insights/accidents_per_weekday_and_year.png "accidents_per_weekday_and_year.png")
+
+- accidents_per_year.png:
+![Accidents_per_months.png](./insights/accidents_per_year.png "accidents_per_year.png")
+
+- daytime_accidents_by_severity.png:
+![daytime_accidents_by_severity.png](./insights/daytime_accidents_by_severity.png "daytime_accidents_by_severity.png")
+
+- fatalities_over_weeks.png:
+![fatalities_over_weeks.png](./insights/fatalities_over_weeks.png "fatalities_over_weeks.png")
+
+- vehicules_age_bands_accidents_by_drivers_age.png:
+![vehicules_age_bands_accidents_by_drivers_age.png](./insights/vehicules_age_bands_accidents_by_drivers_age.png "vehicules_age_bands_accidents_by_drivers_age.png")
