@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import squarify
 
 
 class Chart:
@@ -55,9 +56,9 @@ class Chart:
         index_date_column: str,
         title: str,
         line_legend_title: str,
-        xlabel_title: str,
         filename: str,
         rule: str = "M",
+        xlabel_title: str = "",
     ) -> None:
         """
 
@@ -107,13 +108,13 @@ class Chart:
             colors=colors,
             autopct="%1.2f%%",
             pctdistance=0.6,
-            textprops=dict(fontweight="bold"),
-            wedgeprops={"linewidth": 7, "edgecolor": "white"},
+            textprops=dict(fontweight="normal"),
+            wedgeprops={"linewidth": 6, "edgecolor": "white"},
         )
 
         # plot the donut chart
         fig = plt.gcf()
-        fig.set_size_inches(8, 8)
+        fig.set_size_inches(15, 15)
         plt.title(chart_title, fontsize=14, fontweight="bold")
         plt.savefig(os.path.join(self.output_folder, filename))
 
@@ -142,22 +143,16 @@ class Chart:
         fig, ax = plt.subplots(figsize=(20, 10))
 
         # plot
-        data.reindex(yaxis_values).plot(
-            kind="barh", ax=ax, stacked=True, cmap="Set3"
-        )
+        data.reindex(yaxis_values).plot(kind="barh", ax=ax, stacked=True, cmap="Set3")
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.9, box.height])
         ax.set_title(chart_title, fontsize=14, fontweight="bold")
         ax.set(xlabel=xlabel, ylabel=ylabel)
-        ax.legend(
-            loc="center left", bbox_to_anchor=(1, 0.5), title=legend_title
-        )
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), title=legend_title)
 
         for i, p in enumerate(ax.containers):
             labels = [
-                f"{round((h * 100), 2)}%"
-                if round(h := v.get_width(), 3) != 0
-                else ""
+                f"{round((h * 100), 2)}%" if round(h := v.get_width(), 3) != 0 else ""
                 for v in p
             ]
             ax.bar_label(
@@ -240,9 +235,7 @@ class Chart:
         :param filename:
         :return:
         """
-        colors = [
-            "red" if c == max(data.values) else "grey" for c in data.values
-        ]
+        colors = ["red" if c == max(data.values) else "grey" for c in data.values]
 
         # prepare plot
         sns.set_style("white")
@@ -255,4 +248,31 @@ class Chart:
 
         # remove all spines
         sns.despine(ax=ax, top=True, right=True, left=True, bottom=True)
+        plt.savefig(os.path.join(self.output_folder, filename))
+
+    def heatmap_chart(
+        self,
+        data: pd.DataFrame,
+        graph_title: str,
+        filename: str,
+        xlabel: str = "",
+        ylabel: str = "",
+    ):
+        plt.figure(figsize=(10, 6))
+        sns.heatmap(data, cmap="Greys")
+        plt.title(graph_title, fontsize=14, fontweight="bold")
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.savefig(os.path.join(self.output_folder, filename))
+
+    def treemap_chart(self, labels: pd.DataFrame, sizes: list, filename: str):
+        colors = [plt.cm.Pastel1(i / float(len(labels))) for i in range(len(labels))]
+
+        # plot
+        plt.figure(figsize=(8, 6), dpi=80)
+        squarify.plot(sizes=sizes, label=labels, color=colors, alpha=0.8)
+
+        # Decorate
+        plt.title("\nTreemap of Vehicle Manoeuvre\n", fontsize=14, fontweight="bold")
+        plt.axis("off")
         plt.savefig(os.path.join(self.output_folder, filename))

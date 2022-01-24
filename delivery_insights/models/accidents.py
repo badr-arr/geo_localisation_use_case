@@ -1,11 +1,9 @@
 import pandas as pd
-from analysis.charts import Chart
 from utils.fct import set_daytime_bands, set_vehicule_age_bands
 
 
 class Accidents:
-    def __init__(self, output_folder: str):
-        self.chart = Chart(output_folder)
+    def __init__(self):
         self.days = [
             "Sunday",
             "Saturday",
@@ -30,9 +28,7 @@ class Accidents:
         :param data:
         :return:
         """
-        data["Accident_date"] = pd.to_datetime(
-            data["Accident_date"], format="%Y-%m-%d"
-        )
+        data["Accident_date"] = pd.to_datetime(data["Accident_date"], format="%Y-%m-%d")
 
         # slice first and second string from time column
         data["Hour"] = data["Time"].str[0:2]
@@ -55,195 +51,149 @@ class Accidents:
 
         return data
 
-    def draw_accidents_severity_share_chart(self, data: pd.DataFrame):
-        """
+    def filter_data(self, data, column: str, filter_conditions=None):
+        if filter_conditions:
+            if isinstance(filter_conditions, list):
+                data.drop(
+                    data[data[column].isin(filter_conditions)].index,
+                    axis=0,
+                    inplace=True,
+                )
+            elif isinstance(filter_conditions, str):
+                data.drop(
+                    data[data[column] == filter_conditions].index,
+                    axis=0,
+                    inplace=True,
+                )
 
-        :param data:
-        :return:
-        """
-        data = [
-            data.Accident_Severity.value_counts()["Fatal"],
-            data.Accident_Severity.value_counts()["Serious"],
-            data.Accident_Severity.value_counts()["Slight"],
-        ]
+        return data
 
-        self.chart.pie_share_chart(
-            data_list=data,
-            names_list=[
-                "Fatal Accidents",
-                "Serious Accidents",
-                "Slight Accidents",
-            ],
-            chart_title="Accident Severity: Share in % (2005-2017)",
-            filename="Accidents_severity_share.png",
-        )
-
-    def draw_total_count_per_date_line_chart(self, data: pd.DataFrame):
-        """
-
-        :param data:
-        :return:
-        """
-        self.chart.total_count_per_date_line_chart(
-            data=data,
-            index_date_column="Accident_date",
-            title="Accidents per Month",
-            line_legend_title="Total per Month",
-            xlabel_title="Date per Month",
-            filename="Accidents_per_months.png",
-            rule="M",
-        )
-
-    def draw_vehicules_age_bands_accidents_by_drivers_age(
-        self, data: pd.DataFrame
+    def get_list_accidents_values_by_column(
+        self, data: pd.DataFrame, column: str, filter_conditions=None
     ):
         """
 
         :param data:
         :return:
         """
-        counts = data.groupby(
-            ["Age_band_of_vehicule", "Age_Band_of_Driver"]
-        ).size()
-
-        counts = counts.drop("Data missing", level="Age_band_of_vehicule")
-        counts = counts.drop(
-            "Data missing or out of range", level="Age_Band_of_Driver"
+        filtered_data = self.filter_data(
+            data=data, column=column, filter_conditions=filter_conditions
         )
 
-        counts = counts.rename_axis(
-            ["Age_band_of_vehicule", "Age_Band_of_Driver"]
-        ).unstack(
-            "Age_Band_of_Driver"
-        )  # .rename({1: 'fatal', 2: 'serious', 3: 'slight'}, axis='columns')
+        cols = filtered_data[column].value_counts().index.values
+
+        filtered_data = [filtered_data[column].value_counts()[c] for c in cols]
+
+        return filtered_data, cols
+
+    def get_accidents_share_count(
+        self, data: pd.DataFrame, cols: [], filter_conditions: {} = None
+    ):
+        """
+
+        :param data:
+        :return:
+        """
+        counts = data.groupby(cols).size()
+
+        if filter_conditions and len(filter_conditions.keys()) > 0:
+            for key in filter_conditions.keys():
+                if key in counts.index and isinstance(filter_conditions[key], list):
+                    counts = counts.drop(filter_conditions[key], level=key)
+
+        counts = counts.rename_axis(cols).unstack(cols[1])
 
         cols_to_drop = [*counts.columns, *["sum", "sum in %"]]
 
         # prepare dataframe with shares
         counts["sum"] = counts.sum(axis=1)
-        counts = counts.join(
-            counts.div(counts["sum"], axis=0), rsuffix=" in %"
-        )
+        counts = counts.join(counts.div(counts["sum"], axis=0), rsuffix=" in %")
 
         counts_share = counts.drop(columns=cols_to_drop, axis=1)
 
-        self.chart.stacked_bar_chart(
-            data=counts_share,
-            yaxis_values=self.vehicule_age,
-            chart_title="Vehicule's age bands accidents by Driver's age",
-            xlabel="Percentage",
-            ylabel="Vehicule's age bands",
-            legend_title="Driver's age bands",
-            filename="vehicules_age_bands_accidents_by_drivers_age.png",
-        )
+        return counts_share
 
-    def draw_accidents_by_drivers_age_and_vehicles_age(
-        self, data: pd.DataFrame
+    def get_accidents_counts_using_two_columns(
+        self, data: pd.DataFrame, cols: [], filter_conditions: {}, new_cols_name: []
     ):
         """
 
         :param data:
         :return:
         """
-        drivers = (
-            data.groupby(["Age_Band_of_Driver", "Age_band_of_vehicule"])
-            .size()
-            .reset_index()
-        )
+        counts = data.groupby(cols).size().reset_index()
 
         # drop the values that have no value
-        drivers.drop(
-            drivers[
-                (
-                    drivers["Age_Band_of_Driver"]
-                    == "Data missing or out of range"
-                )
-                | (drivers["Age_band_of_vehicule"] == "Data missing")
-            ].index,
-            axis=0,
-            inplace=True,
-        )
+        if len(filter_conditions.keys()) > 0:
+            for col in filter_conditions.keys():
+                if col in counts.columns:
+                    counts.drop(
+                        counts[counts[col].isin(filter_conditions[col])].index,
+                        axis=0,
+                        inplace=True,
+                    )
         # rename the columns
-        drivers.columns = [
-            "Age_Band_of_Driver",
-            "Age_band_of_vehicule",
-            "Count",
-        ]
-        drivers["Percentage"] = drivers["Count"] / drivers["Count"].sum()
+        counts.columns = new_cols_name
 
-        drivers = drivers.sort_values(["Age_Band_of_Driver"], ascending=True)
+        return counts
 
-        self.chart.grouped_bar_char(
-            data=drivers,
-            yaxis_variable="Age_Band_of_Driver",
-            xaxis_variable="Percentage",
-            hue_variable="Age_band_of_vehicule",
-            chart_title="Accidents by driver's age and vehicle's age",
-            xlabel="Percentage",
-            ylabel="Age Band of Driver",
-            filename="accidents_by_drivers_age_and_vehicles_age.png",
-            data_labels_params={
-                "fmt": "0.3f",
-                "round_number": 3,
-                "is_percentage": True,
-            },
-        )
-
-    def draw_accidents_by_age_and_sex(self, data: pd.DataFrame):
-        """
-
-        :param data:
-        :return:
-        """
-        drivers = (
-            data.groupby(["Age_Band_of_Driver", "Sex_of_Driver"])
-            .size()
-            .reset_index()
-        )
-
-        # drop the values that have no value
-        drivers.drop(
-            drivers[
-                (
-                    drivers["Age_Band_of_Driver"]
-                    == "Data missing or out of range"
-                )
-                | (drivers["Sex_of_Driver"] == "Not known")
-                | (drivers["Sex_of_Driver"] == "Data missing or out of range")
-            ].index,
-            axis=0,
-            inplace=True,
-        )
-        # rename the columns
-        drivers.columns = ["Age_Band_of_Driver", "Sex_of_Driver", "Total"]
-
-        self.chart.grouped_bar_char(
-            data=drivers,
-            yaxis_variable="Age_Band_of_Driver",
-            xaxis_variable="Total",
-            hue_variable="Sex_of_Driver",
-            chart_title="Accidents by drivers age and sex",
-            xlabel="Total",
-            ylabel="Age Band of Driver",
-            filename="accidents_by_age_and_sex.png",
-            data_labels_params={"fmt": ".0f", "round_number": 0},
-        )
-
-    def draw_accidents_per_year(self, data: pd.DataFrame):
+    def get_accidents_per_year(self, data: pd.DataFrame):
         """
 
         :param data:
         :return:
         """
         yearly_count = (
-            data["Accident_date"]
-            .dt.year.value_counts()
-            .sort_index(ascending=False)
+            data["Accident_date"].dt.year.value_counts().sort_index(ascending=False)
         )
-        print(type(yearly_count))
-        self.chart.bar_chart(
-            data=yearly_count,
-            graph_title="Accidents per Year",
-            ylabel="Total values",
-            filename="accidents_per_year.png",
+        return yearly_count
+
+    def get_accidents_per_hour(self, data: pd.DataFrame):
+        """
+
+        :param data:
+        :return:
+        """
+        hourly_count = data["Hour"].value_counts().sort_index(ascending=False)
+        return hourly_count
+
+    def get_accidents_per_daytime(self, data: pd.DataFrame):
+        """
+
+        :param data:
+        :return:
+        """
+        daytime_count = data["Daytime"].value_counts().sort_index(ascending=False)
+        return daytime_count
+
+    def get_accidents_per_weekday_and_year(self, data: pd.DataFrame, days: []):
+        weekday = data["Accident_date"].dt.day_name()
+        year = data["Accident_date"].dt.year
+
+        accidents_per_weekday_and_year = data.groupby([year, weekday]).size()
+        accidents_per_weekday_and_year = (
+            accidents_per_weekday_and_year.rename_axis(["Year", "Weekday"])
+            .unstack("Weekday")
+            .reindex(columns=days)
         )
+        return accidents_per_weekday_and_year
+
+    def get_accidents_count_by_column(
+        self, data: pd.DataFrame, column: str, min_value: int = 0, filter_conditions=None
+    ):
+        filtered_data = self.filter_data(
+            data=data, column=column, filter_conditions=filter_conditions
+        )
+
+        grouped_data = (
+            filtered_data.groupby(column)
+            .size()
+            .reset_index(name="counts")
+            .sort_values(by="counts", ascending=False)
+        )
+        grouped_data = grouped_data[grouped_data.counts > min_value]
+        labels = grouped_data.apply(
+            lambda x: str(x[0]) + "\n (" + str(x[1]) + ")", axis=1
+        )
+        sizes = grouped_data["counts"].values.tolist()
+        return grouped_data, labels, sizes
