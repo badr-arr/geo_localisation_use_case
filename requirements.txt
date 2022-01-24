@@ -10,3 +10,4 @@ black
 isort
 interrogate
 sphinx
+pytest
