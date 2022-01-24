@@ -2,8 +2,8 @@ import pandas as pd
 import argparse
 import os
 import sys
-from delivery_insights.models.accidents import Accidents
-from delivery_insights.analysis.charts import Chart
+from models.accidents import Accidents
+from analysis.charts import Chart
 
 
 def visualize_pipeline():
@@ -250,6 +250,7 @@ def visualize(data: pd.DataFrame, output_folder: str):
         labels=accidents_by_home_area_labels,
         sizes=accidents_by_home_area_sizes,
         filename="accidents_by_home_area.png",
+        title="Treemap of accidents by drivers home area",
     )
 
     # draw accidents by journey purpose
@@ -258,12 +259,13 @@ def visualize(data: pd.DataFrame, output_folder: str):
         accidents_by_journey_purpose_labels,
         accidents_by_journey_purpose_sizes,
     ) = accidents.get_accidents_count_by_column(
-        data=data, column="Journey_Purpose_of_Driver"
+        data=data, column="Journey_Purpose_of_Driver", min_value=30000
     )
     chart.treemap_chart(
         labels=accidents_by_journey_purpose_labels,
         sizes=accidents_by_journey_purpose_sizes,
         filename="accidents_by_journey_purpose.png",
+        title="Treemap of accidents by journey purpose of driver",
     )
 
     # draw accidents by manoeuver
@@ -278,4 +280,5 @@ def visualize(data: pd.DataFrame, output_folder: str):
         labels=accidents_by_manoeuver_labels,
         sizes=accidents_by_manoeuver_sizes,
         filename="accidents_by_manoeuver.png",
+        title="Treemap of accidents by vehicule manoeuver",
     )

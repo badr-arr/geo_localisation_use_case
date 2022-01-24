@@ -281,7 +281,9 @@ class Chart:
         plt.ylabel(ylabel)
         plt.savefig(os.path.join(self.output_folder, filename))
 
-    def treemap_chart(self, labels: pd.DataFrame, sizes: list, filename: str) -> None:
+    def treemap_chart(
+        self, labels: pd.DataFrame, sizes: list, filename: str, title: str
+    ) -> None:
         """
         Create treemap chart
 
@@ -297,6 +299,6 @@ class Chart:
         squarify.plot(sizes=sizes, label=labels, color=colors, alpha=0.8)
 
         # Decorate
-        plt.title("\nTreemap of Vehicle Manoeuvre\n", fontsize=14, fontweight="bold")
+        plt.title(title, fontsize=14, fontweight="bold")
         plt.axis("off")
         plt.savefig(os.path.join(self.output_folder, filename))

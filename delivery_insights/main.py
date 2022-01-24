@@ -1,7 +1,7 @@
 import warnings
 import pandas as pd
 import os
-
+from models.accidents import Accidents
 from pipelines.extract.pipeline import extract
 from pipelines.transform.pipeline import transform
 from pipelines.load.pipeline import load
@@ -11,8 +11,9 @@ from utils.config import parse_arguments
 warnings.filterwarnings("ignore")
 
 config = parse_arguments()
-OUTPUT_FOLDER = config.output_folder
-DB_CONFIG_FILE = config.db_config_file
+print(config)
+OUTPUT_FOLDER = config["output_folder"]
+DB_CONFIG_FILE = config["db_config_file"]
 
 
 def main() -> None:
@@ -20,6 +21,7 @@ def main() -> None:
     Main function
     :return:
     """
+    print(OUTPUT_FOLDER)
     extract(
         repo="tsiaras/uk-road-safety-accidents-and-vehicles",
         files_list=["Accident_Information.csv", "Vehicle_Information.csv"],
@@ -27,11 +29,11 @@ def main() -> None:
     )
 
     print("Reading file Accident_Information.csv")
-    accident_info = pd.read_csv(os.path.join(os.getcwd(), "Accident_Information.csv"))
+    accident_info = pd.read_csv(os.path.join(OUTPUT_FOLDER, "Accident_Information.csv"))
 
     print("Reading file Vehicle_Information.csv")
     vehicle_info = pd.read_csv(
-        os.path.join(os.getcwd(), "Vehicle_Information.csv"),
+        os.path.join(OUTPUT_FOLDER, "Vehicle_Information.csv"),
         encoding="ISO-8859-1",
     )
 
@@ -40,7 +42,8 @@ def main() -> None:
         vehicle_info, on=["Accident_Index", "Year"], how="inner"
     ).rename(columns={"Date": "Accident_date"})
 
-    data = transform(
+    data = Accidents().transform(data=data)
+    new_data = transform(
         data=data,
         output_folder=OUTPUT_FOLDER,
         columns=[
@@ -55,7 +58,7 @@ def main() -> None:
             "Day_of_Week",
         ],
     )
-
+    print(new_data.head())
     load(data=data, db_config_file=DB_CONFIG_FILE)
     visualize(data, output_folder=OUTPUT_FOLDER)
 

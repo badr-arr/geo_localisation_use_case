@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from delivery_insights.loader.db import Database
+from loader.db import Database
 import argparse
 
 

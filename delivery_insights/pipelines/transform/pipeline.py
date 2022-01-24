@@ -49,6 +49,8 @@ def transform(data: pd.DataFrame, output_folder: str, columns: list):
 
     new_data.columns = [c.lower() for c in new_data.columns]
 
-    new_data.to_csv(os.path.join(output_folder, "transformed_data"), index=False, sep=";")
+    new_data.to_csv(
+        os.path.join(output_folder, "transformed_data.csv"), index=False, sep=";"
+    )
 
     return new_data

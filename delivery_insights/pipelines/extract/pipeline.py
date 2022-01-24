@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 import argparse
-from delivery_insights.loader.kaggle import kaggle
+from loader.kaggle import kaggle
 import shutil
 
 
@@ -22,7 +22,7 @@ def extract(repo: str, files_list: list, output_folder: str):
 
     for f in files_list:
         shutil.move(
-            os.path.join(Path(__file__).parent.absolute(), f),
+            os.path.join(os.getcwd(), f),
             os.path.join(output_folder, f),
         )
 

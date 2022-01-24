@@ -13,9 +13,7 @@ def parse_arguments():
     parser.add_argument(
         "--output-folder", help="Path to output folder where to store charts", type=str
     )
-    parser.add_argument(
-        "--db-config-file", help="Path to database.ini file", type=str, required=False
-    )
+    parser.add_argument("--db-config-file", help="Path to database.ini file", type=str)
     args = parser.parse_args()
     output_folder = args.output_folder
     db_config_file = args.db_config_file
