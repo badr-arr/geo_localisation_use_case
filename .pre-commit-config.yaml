@@ -11,10 +11,6 @@ repos:
               '-e', 'git+https://github.com/pycqa/pyflakes@1911c20#egg=pyflakes',
               '-e', 'git+https://github.com/pycqa/pycodestyle@d219c68#egg=pycodestyle',
       ]
--   repo: https://github.com/timothycrosley/isort
-    rev: 5.7.0
-    hooks:
-    - id: isort
 -   repo: https://github.com/econchick/interrogate
     rev: 1.4.0
     hooks:

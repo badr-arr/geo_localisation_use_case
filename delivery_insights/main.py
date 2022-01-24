@@ -55,7 +55,7 @@ def main():
     all_data = accident_info.merge(
         vehicle_info, on=["Accident_Index", "Year"], how="inner"
     ).rename(columns={"Date": "Accident_date"})
-
+    all_data.head(20).to_csv("sample.csv", sep=";")
     new_data = all_data[
         [
             "Accident_Index",

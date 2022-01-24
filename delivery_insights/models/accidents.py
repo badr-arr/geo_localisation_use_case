@@ -1,5 +1,6 @@
 import pandas as pd
-from utils.fct import set_daytime_bands, set_vehicule_age_bands
+
+from delivery_insights.utils.fct import set_daytime_bands, set_vehicule_age_bands
 
 
 class Accidents:
@@ -22,7 +23,8 @@ class Accidents:
         ]
         self.vehicule_age = [">=15", "10-14", "5-9", "0-4"]
 
-    def transform(self, data: pd.DataFrame):
+    @staticmethod
+    def transform(data: pd.DataFrame):
         """
 
         :param data:
@@ -51,7 +53,8 @@ class Accidents:
 
         return data
 
-    def filter_data(self, data, column: str, filter_conditions=None):
+    @staticmethod
+    def filter_data(data, column: str, filter_conditions=None):
         if filter_conditions:
             if isinstance(filter_conditions, list):
                 data.drop(
@@ -98,7 +101,9 @@ class Accidents:
 
         if filter_conditions and len(filter_conditions.keys()) > 0:
             for key in filter_conditions.keys():
-                if key in counts.index and isinstance(filter_conditions[key], list):
+                if key in counts.reset_index().columns and isinstance(
+                    filter_conditions[key], list
+                ):
                     counts = counts.drop(filter_conditions[key], level=key)
 
         counts = counts.rename_axis(cols).unstack(cols[1])
