@@ -1,6 +1,6 @@
 import pandas as pd
 
-from utils.fct import set_daytime_bands, set_vehicule_age_bands
+from delivery_insights.utils.fct import set_daytime_bands, set_vehicule_age_bands
 
 
 class Accidents:

@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -7,22 +7,25 @@ def read(fname):
 
 
 setup(
-    name="Geo localisation use case",
+    name="delivery_insights",
     version="0.0.1",
     author="Badr Arrabatchou",
     author_email="arr.badr@gmail.com",
-    description=(
-        "An demonstration of how to create, document, and publish "
-        "to the cheese shop a5 pypi.org."
-    ),
-    license="BSD",
-    keywords="example documentation tutorial",
-    url="http://packages.python.org/an_example_pypi_project",
-    packages=["an_example_pypi_project", "tests"],
-    long_description=read("README"),
+    description=("Pipeline use case"),
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    long_description=read("README.md"),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: BSD License",
     ],
+    entry_points={
+        "console_scripts": [
+            "delivery_insights=delivery_insights.main:main",
+            "extract_pipeline=delivery_insights.pipelines.extract.pipeline:extract_pipeline",
+            "transform_pipeline=delivery_insights.pipelines.transform.pipeline:transform_pipeline",
+            "load_pipeline=delivery_insights.pipelines.load.pipeline:load_pipeline",
+            "visualize_pipeline=delivery_insights.pipelines.visualize.pipeline:visualize_pipeline",
+        ]
+    },
 )

@@ -2,8 +2,8 @@ import pandas as pd
 import argparse
 import os
 import sys
-from models.accidents import Accidents
-from analysis.charts import Chart
+from delivery_insights.models.accidents import Accidents
+from delivery_insights.analysis.charts import Chart
 
 
 def visualize_pipeline():

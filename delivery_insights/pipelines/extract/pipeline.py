@@ -2,7 +2,7 @@ import os
 import sys
 from pathlib import Path
 import argparse
-from loader.kaggle import kaggle
+from delivery_insights.loader.kaggle import kaggle
 import shutil
 
 

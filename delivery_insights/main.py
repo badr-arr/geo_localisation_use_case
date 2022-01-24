@@ -1,12 +1,12 @@
 import warnings
 import pandas as pd
 import os
-from models.accidents import Accidents
-from pipelines.extract.pipeline import extract
-from pipelines.transform.pipeline import transform
-from pipelines.load.pipeline import load
-from pipelines.visualize.pipeline import visualize
-from utils.config import parse_arguments
+from delivery_insights.models.accidents import Accidents
+from delivery_insights.pipelines.extract.pipeline import extract
+from delivery_insights.pipelines.transform.pipeline import transform
+from delivery_insights.pipelines.load.pipeline import load
+from delivery_insights.pipelines.visualize.pipeline import visualize
+from delivery_insights.utils.config import parse_arguments
 
 warnings.filterwarnings("ignore")
 
